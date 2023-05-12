@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +37,7 @@ public class MemberController {
     return "redirect:/members/login";
   }
 
-  @GetMapping("/login")
+  @GetMapping("/login") // ?redirectURL=/items/itemList
   public String login(Model model){
     LoginDto login = new LoginDto();
     log.info("loginDto : " + login);
@@ -48,9 +45,10 @@ public class MemberController {
     return "members/login";
   }
 
-  @PostMapping("/login")
+  @PostMapping("/login") // ?redirectURL=/items/itemList
   public String loginProcess(@ModelAttribute("login") LoginDto loginDto,
-                             HttpServletRequest req){
+                             HttpServletRequest req,
+                             @RequestParam(defaultValue = "/") String redirectURL ){
                              //HttpServletResponse resp){
     Member loginMember = memberService.login(loginDto);
     if(loginMember == null){
@@ -67,11 +65,7 @@ public class MemberController {
       HttpSession session = req.getSession(true);// 세션이 없으면 생성해서 리턴, 있으면 있는 세션을 가져와서 리턴
       session.setAttribute("loginMember", sessionMember);
 
-      return "redirect:/home";
-      // 쿠키를 응답에 담아서 클라이언트로 전송
-//      Cookie cookie = new Cookie("memberId2", String.valueOf(loginMember.getId()));
-//      cookie.setPath("/");
-//      resp.addCookie(cookie);
+      return "redirect:" + redirectURL;
     }
   }
 
