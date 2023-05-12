@@ -4,6 +4,7 @@ import Order.miniproject.Service.MemberService;
 import Order.miniproject.domain.Member;
 import Order.miniproject.domain.dto.LoginDto;
 import Order.miniproject.domain.dto.MemberDto;
+import Order.miniproject.domain.dto.SessionMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Controller
 @Slf4j
@@ -48,7 +50,8 @@ public class MemberController {
 
   @PostMapping("/login")
   public String loginProcess(@ModelAttribute("login") LoginDto loginDto,
-                             HttpServletResponse resp){
+                             HttpServletRequest req){
+                             //HttpServletResponse resp){
     Member loginMember = memberService.login(loginDto);
     if(loginMember == null){
       //로그인 실패
@@ -56,25 +59,38 @@ public class MemberController {
       return "members/login";
     } else {
       // 로그인 성공
-      // 쿠키를 응답에 담아서 클라이언트로 전송
+    // 세션에 로그인 멤버 정보를 담는다.
       log.info("==== 로그인 post ==== 성공");
-      Cookie cookie = new Cookie("memberId2", String.valueOf(loginMember.getId()));
-      cookie.setPath("/");
-      resp.addCookie(cookie);
+      SessionMember sessionMember = new SessionMember(
+          loginMember.getId(), loginMember.getLoginId(), loginMember.getName());
+
+      HttpSession session = req.getSession(true);// 세션이 없으면 생성해서 리턴, 있으면 있는 세션을 가져와서 리턴
+      session.setAttribute("loginMember", sessionMember);
+
       return "redirect:/home";
+      // 쿠키를 응답에 담아서 클라이언트로 전송
+//      Cookie cookie = new Cookie("memberId2", String.valueOf(loginMember.getId()));
+//      cookie.setPath("/");
+//      resp.addCookie(cookie);
     }
   }
 
   @PostMapping("/logout")
-  public String logout(HttpServletRequest req, HttpServletResponse resp) {
-    Cookie[] cookies = req.getCookies();
-    for(Cookie cookie : cookies){
-      if(cookie.getName().equals("memberId2")){
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        resp.addCookie(cookie);
-      }
+  public String logout(HttpServletRequest req) { // HttpServletResponse resp
+    HttpSession session = req.getSession(false);// 세션이 없으면 null, 있으면 세션을 반환
+    if(session != null) {
+      session.invalidate();
     }
     return "redirect:/";
+
+//    Cookie[] cookies = req.getCookies();
+//    for(Cookie cookie : cookies){
+//      if(cookie.getName().equals("memberId2")){
+//        cookie.setPath("/");
+//        cookie.setMaxAge(0);
+//        resp.addCookie(cookie);
+//      }
+//    }
+
   }
 }
