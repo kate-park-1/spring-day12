@@ -11,19 +11,19 @@
   <form class="form">
   <div th:object="${item}" >
     <div class="mb-3 row">
-      <label class="col-sm-2 col-form-label">상품ID</label>
+      <label th:text="#{label.item.id}" class="col-sm-2 col-form-label">상품ID</label>
       <div class="col-sm-10">
         <input class="form-control" type="text" th:value="${item.id}" readonly>
       </div>
     </div>
      <div class="mb-3 row">
-       <label class="col-sm-2 col-form-label">상품명</label>
+       <label th:text="#{label.item.name}" class="col-sm-2 col-form-label">상품명</label>
        <div class="col-sm-10">
           <input class="form-control" type="text" th:value="*{name}" readonly>
        </div>
      </div>
     <div class="mb-3 row">
-      <label class="col-sm-2 col-form-label">저자</label>
+      <label th:text="#{label.item.author}" class="col-sm-2 col-form-label">저자</label>
       <div class="col-sm-10">
         <input class="form-control" type="text" th:value="*{author}" readonly>
       </div>
@@ -35,13 +35,13 @@
       </div>
     </div>
     <div class="mb-3 row">
-      <label class="col-sm-2 col-form-label">상품가격</label>
+      <label th:text="#{label.item.price}" class="col-sm-2 col-form-label">상품가격</label>
       <div class="col-sm-10">
         <input class="form-control" type="text" th:value="*{price}" readonly>
       </div>
     </div>
     <div class="mb-3 row">
-      <label class="col-sm-2 col-form-label">상품수량</label>
+      <label th:text="#{label.item.stockQuantity}" class="col-sm-2 col-form-label">상품수량</label>
       <div class="col-sm-10">
         <input class="form-control" type="text" th:value="*{stockQuantity}" readonly>
       </div>
